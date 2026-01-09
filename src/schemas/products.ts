@@ -11,10 +11,7 @@ export const productInputSchema = z.strictObject({
   price: z
     .number({ error: 'Product price must be a number' })
     .positive({ message: 'Product price is required and must be gerater than 0' }),
-  categoryId: z
-    .string()
-    .min(1, { message: 'Category ID is required' })
-    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid Category ID format' }),
+  categoryId: z.instanceof(Types.ObjectId),
   isActive: z.boolean().default(true)
 });
 
