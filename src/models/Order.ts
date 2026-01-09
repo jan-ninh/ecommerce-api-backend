@@ -2,13 +2,18 @@ import { Schema, model, type InferSchemaType } from 'mongoose';
 
 const orderItemSchema = new Schema(
   {
-    // Item-Daten werden erstmal in der Order gespeichert (ohne Product Item)
+    // Referenz auf Product jetzt als ObjectId)
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Product',
+      required: [true, 'productId is required']
+    },
+
+    // Wichtige Felder fuer Snapshot
     title: { type: String, required: [true, 'Item title is required'], trim: true },
     unitPrice: { type: Number, required: [true, 'unitPrice is required'], min: [0, 'unitPrice must be >= 0'] },
-    quantity: { type: Number, required: [true, 'quantity is required'], min: [1, 'quantity must be >= 1'] },
 
-    // für später wenn Products da sind
-    productId: { type: String, required: false }
+    quantity: { type: Number, required: [true, 'quantity is required'], min: [1, 'quantity must be >= 1'] }
   },
   { _id: false }
 );
@@ -39,7 +44,6 @@ const orderSchema = new Schema(
 
 // total immer aus items berechnen (Client nicht vertrauen)
 orderSchema.pre('validate', function (next) {
-  // "this" ist das aktuelle Dokument
   const doc = this as any;
   const items = Array.isArray(doc.items) ? doc.items : [];
 
