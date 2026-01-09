@@ -5,3 +5,7 @@ export type UserType = {
   password: string;
   isActive?: boolean;
 };
+
+export type CategoryType = {
+  name: string;
+};
