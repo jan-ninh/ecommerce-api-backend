@@ -1,5 +1,5 @@
 import { type RequestHandler } from 'express';
-import { Product } from '#models';
+import { Category, Product } from '#models';
 import { productInputSchema, productSchema } from '#schemas';
 import { z } from 'zod/v4';
 
@@ -17,6 +17,9 @@ export const createProduct: RequestHandler<{}, ProductDTO, ProductInputDTO> = as
   if (found) throw new Error('Product already exists', { cause: 400 });
   */
 
+  // FR16: create must fail if given categoryId is not referencing valid category
+  // => no extra code necessary
+
   const product = await Product.create(req.body);
   res.json(product);
 };
@@ -31,6 +34,8 @@ export const getProductById: RequestHandler<{ id: string }, ProductDTO> = async 
 };
 
 export const updateProduct: RequestHandler<{ id: string }, ProductDTO, ProductInputDTO> = async (req, res) => {
+  // FR16: update must fail if given categoryId is not referencing valid category
+  // =>  no extra code necessary
   const {
     body,
     params: { id }
@@ -47,6 +52,7 @@ export const updateProduct: RequestHandler<{ id: string }, ProductDTO, ProductIn
 };
 
 export const deleteProduct: RequestHandler<{ id: string }> = async (req, res) => {
+  // TODO: delete must fail if product is necessary for order
   const {
     params: { id }
   } = req;

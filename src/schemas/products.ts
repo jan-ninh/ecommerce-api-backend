@@ -1,5 +1,5 @@
 import { z } from 'zod/v4';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
 export const productInputSchema = z.strictObject({
   name: z
@@ -12,9 +12,10 @@ export const productInputSchema = z.strictObject({
     .number({ error: 'Product price must be a number' })
     .positive({ message: 'Product price is required and must be gerater than 0' }),
   categoryId: z
-    .string()
-    .min(1, { message: 'Category ID is required' })
-    .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid Category ID format' }),
+    .any()
+    .refine(val => (typeof val === 'string' && /^[a-fA-F0-9]{24}$/.test(val)) || val instanceof Types.ObjectId, {
+      message: 'Category ID must be a valid ObjectId'
+    }),
   isActive: z.boolean().default(true)
 });
 
