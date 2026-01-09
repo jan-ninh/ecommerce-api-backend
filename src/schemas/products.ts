@@ -13,10 +13,9 @@ export const productInputSchema = z.strictObject({
     .positive({ message: 'Product price is required and must be gerater than 0' }),
   categoryId: z
     .any()
-    .refine(
-      val => (typeof val === 'string' && /^[a-fA-F0-9]{24}$/.test(val)) || val instanceof mongoose.Types.ObjectId,
-      { message: 'Category ID must be a valid string or ObjectId' }
-    ),
+    .refine(val => (typeof val === 'string' && /^[a-fA-F0-9]{24}$/.test(val)) || val instanceof Types.ObjectId, {
+      message: 'Category ID must be a valid ObjectId'
+    }),
   isActive: z.boolean().default(true)
 });
 
