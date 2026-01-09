@@ -1,6 +1,6 @@
 import '#db';
 import express from 'express';
-import { userRouter } from '#routers';
+import { userRouter, categoryRouter } from '#routers';
 import { errorHandler, logger } from '#middlewares';
 
 const app = express();
@@ -10,6 +10,7 @@ app.use(express.json());
 app.use(logger);
 
 app.use('/users', userRouter);
+app.use('/categories', categoryRouter);
 
 app.use('/*splat', (req, res) => {
   throw new Error('Not found!', { cause: 404 });
