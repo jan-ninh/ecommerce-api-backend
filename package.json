@@ -32,8 +32,7 @@
     "#schemas": {
       "development": "./src/schemas/index.ts",
       "default": "./dist/schemas/index.js"
-    },
-    "#types": "./src/types/index.ts"
+    }
   },
   "scripts": {
     "dev": "node --env-file=.env.development.local --watch --conditions development src/app.ts",

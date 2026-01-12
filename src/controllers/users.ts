@@ -1,6 +1,5 @@
 import { type RequestHandler } from 'express';
 import { User } from '#models';
-import type { UserType } from '#types';
 import { userInputSchema, userSchema } from '#schemas';
 import { z } from 'zod/v4';
 
