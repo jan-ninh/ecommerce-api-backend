@@ -12,13 +12,13 @@ export const getProducts: RequestHandler<{}, ProductDTO[]> = async (req, res) =>
 };
 
 export const createProduct: RequestHandler<{}, ProductDTO, ProductInputDTO> = async (req, res) => {
-  /* TODO: anhand welchen Merkmals soll das Erstellen von Dubletten verhindert werden?
+  /* TODO: anhand welchen Merkmals soll das Erstellen von Dublikaten verhindert werden?
     const found = await Product.findOne({ name: req.body.name });
   if (found) throw new Error('Product already exists', { cause: 400 });
   */
 
-  // FR16: create must fail if given categoryId is not referencing valid category
-  // => no extra code necessary
+  const existingCategories = await Category.findOne({ _id: req.body.categoryId });
+  if (!existingCategories) throw new Error('Category not found', { cause: 404 });
 
   const product = await Product.create(req.body);
   res.json(product);
@@ -34,13 +34,15 @@ export const getProductById: RequestHandler<{ id: string }, ProductDTO> = async 
 };
 
 export const updateProduct: RequestHandler<{ id: string }, ProductDTO, ProductInputDTO> = async (req, res) => {
-  // FR16: update must fail if given categoryId is not referencing valid category
-  // =>  no extra code necessary
   const {
     body,
     params: { id }
   } = req;
   const { name, description, price, categoryId, isActive } = body;
+
+  const existingCategories = await Category.findOne({ _id: categoryId });
+  if (!existingCategories) throw new Error('Category not found', { cause: 404 });
+
   const product = await Product.findById(id);
   if (!product) throw new Error('Product not found', { cause: 404 });
   product.name = name;
@@ -52,7 +54,7 @@ export const updateProduct: RequestHandler<{ id: string }, ProductDTO, ProductIn
 };
 
 export const deleteProduct: RequestHandler<{ id: string }> = async (req, res) => {
-  // TODO: delete must fail if product is necessary for order
+  // TODO: delete must fail if product is referenced in order
   const {
     params: { id }
   } = req;
