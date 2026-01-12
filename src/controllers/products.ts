@@ -7,7 +7,13 @@ type ProductInputDTO = z.infer<typeof productInputSchema>;
 type ProductDTO = z.infer<typeof productSchema>;
 
 export const getProducts: RequestHandler<{}, ProductDTO[]> = async (req, res) => {
-  const products = await Product.find();
+  const categoryId = req.query.categoryId as string | undefined;
+
+  const existingCategories = await Category.findOne({ _id: categoryId });
+  if (!existingCategories) throw new Error('Category not found', { cause: 404 });
+  // TODO: precise custom error handling if categoryId.length !== 24
+
+  const products = categoryId ? await Product.find({ categoryId }) : await Product.find();
   res.json(products);
 };
 
