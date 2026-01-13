@@ -1,4 +1,5 @@
 import { Schema, model, type InferSchemaType } from 'mongoose';
+import { cleanResponse } from '../db/mongoose.plugins.js';
 
 const productSchema = new Schema(
   {
@@ -31,6 +32,8 @@ const productSchema = new Schema(
     timestamps: true
   }
 );
+
+productSchema.plugin(cleanResponse);
 
 export type ProductDoc = InferSchemaType<typeof productSchema>;
 const Product = model<ProductDoc>('Product', productSchema);

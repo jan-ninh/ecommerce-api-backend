@@ -1,4 +1,5 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, type InferSchemaType } from 'mongoose';
+import { cleanResponse } from '../db/mongoose.plugins.js';
 
 const categorySchema = new Schema(
   {
@@ -13,4 +14,8 @@ const categorySchema = new Schema(
   }
 );
 
-export default model('Category', categorySchema);
+categorySchema.plugin(cleanResponse);
+
+export type CategoryDoc = InferSchemaType<typeof categorySchema>;
+const Category = model<CategoryDoc>('Category', categorySchema);
+export default Category;
