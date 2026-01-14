@@ -1,4 +1,5 @@
 import { Schema, model, type InferSchemaType } from 'mongoose';
+import { cleanResponse } from '../db/mongoose.plugins.js';
 
 const orderItemSchema = new Schema(
   {
@@ -40,6 +41,8 @@ const orderSchema = new Schema(
   },
   { timestamps: true }
 );
+
+orderSchema.plugin(cleanResponse);
 
 export type OrderDoc = InferSchemaType<typeof orderSchema>;
 const Order = model<OrderDoc>('Order', orderSchema);
