@@ -1,22 +1,26 @@
 import { z } from 'zod/v4';
-import { Types } from 'mongoose';
 
-export const userInputSchema = z.strictObject({
-  firstName: z
-    .string({ error: 'firstName must be a string' })
-    .min(2, { message: 'firstName is required and must be at least 2 characters long' }),
-  lastName: z
-    .string({ error: 'lastName must be a string' })
-    .min(2, { message: 'lastName is required and must be at least 2 characters long' }),
-  email: z.email({ message: 'email must be a valid email address' }),
-  password: z.string().min(8, { message: 'Password must contain at least 8 characters' }),
-  isActive: z.boolean()
+export const userCreateSchema = z.strictObject({
+  firstName: z.string().min(2),
+  lastName: z.string().min(2),
+  email: z.email(),
+  password: z.string().min(8),
+  isActive: z.boolean().optional()
 });
 
-export const userSchema = z.strictObject({
-  _id: z.instanceof(Types.ObjectId),
-  ...userInputSchema.shape,
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  __v: z.number()
+export const userUpdateSchema = z.strictObject({
+  firstName: z.string().min(2).optional(),
+  lastName: z.string().min(2).optional(),
+  email: z.email().optional(),
+  isActive: z.boolean().optional()
+});
+
+export const userPublicSchema = z.strictObject({
+  id: z.string(), // cleanResponse
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.email(),
+  isActive: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string()
 });
