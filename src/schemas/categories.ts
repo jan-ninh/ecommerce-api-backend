@@ -1,5 +1,10 @@
 import { z } from 'zod/v4';
 import { Types } from 'mongoose';
+import { objectIdString } from './common.ts';
+
+export const categoryIdParamsSchema = z.strictObject({
+  id: objectIdString
+});
 
 export const categoryInputSchema = z
   .object({
