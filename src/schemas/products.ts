@@ -1,5 +1,15 @@
 import { z } from 'zod/v4';
-import mongoose, { Types } from 'mongoose';
+import { Types } from 'mongoose';
+import { objectIdString } from './common.ts';
+
+export const productIdParamsSchema = z.strictObject({
+  id: objectIdString
+});
+
+// GET /products?categoryId=...
+export const productQuerySchema = z.strictObject({
+  categoryId: objectIdString.optional()
+});
 
 /**
  * @openapi

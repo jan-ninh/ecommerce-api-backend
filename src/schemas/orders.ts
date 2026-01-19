@@ -1,8 +1,9 @@
 import { z } from 'zod/v4';
+import { objectIdString } from './common.ts';
 
-const objectIdString = z
-  .string({ error: 'id must be a string' }) // verhindert objectId: 123
-  .regex(/^[a-fA-F0-9]{24}$/, { message: 'Invalid id format' }); // verhindert objectId: "abc"
+export const orderIdParamsSchema = z.strictObject({
+  id: objectIdString
+});
 
 /**
  * @openapi

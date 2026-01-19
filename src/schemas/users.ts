@@ -1,4 +1,10 @@
 import { z } from 'zod/v4';
+import { objectIdString } from './common.ts';
+
+// Validiert req.params.id (muss 24-hex ObjectId-String sein)
+export const userIdParamsSchema = z.strictObject({
+  id: objectIdString
+});
 
 /**
  * @openapi
@@ -130,6 +136,7 @@ export const userUpdateSchema = z.strictObject({
  *         - updatedAt
  */
 
+// Response (Public DTO ohne PW)
 export const userPublicSchema = z.strictObject({
   id: z.string(), // cleanResponse
   firstName: z.string(),
