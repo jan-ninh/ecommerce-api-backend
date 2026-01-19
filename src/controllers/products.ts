@@ -6,6 +6,33 @@ import { z } from 'zod/v4';
 type ProductInputDTO = z.infer<typeof productInputSchema>;
 type ProductDTO = z.infer<typeof productSchema>;
 
+/**
+ * @openapi
+ * /products:
+ *   get:
+ *     tags:
+ *       - Products
+ *     description: Get all products or filter by category
+ *     parameters:
+ *       - in: query
+ *         name: categoryId
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Category ID to filter products
+ *     responses:
+ *       200:
+ *         description: List of products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ProductOutput'
+ *       404:
+ *         description: Category not found
+ */
+
 export const getProducts: RequestHandler<{}, ProductDTO[]> = async (req, res) => {
   const categoryId = req.query.categoryId as string | undefined;
 
@@ -21,6 +48,32 @@ export const getProducts: RequestHandler<{}, ProductDTO[]> = async (req, res) =>
   res.json(products);
 };
 
+/**
+ * @openapi
+ * /products:
+ *   post:
+ *     tags:
+ *       - Products
+ *     description: Create a new product
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductInput'
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ProductOutput'
+ *       404:
+ *         description: Category not found
+ *       400:
+ *         description: Validation error
+ */
+
 export const createProduct: RequestHandler<{}, ProductDTO, ProductInputDTO> = async (req, res) => {
   /* TODO: anhand welchen Merkmals soll das Erstellen von Dublikaten verhindert werden?
     const found = await Product.findOne({ name: req.body.name });
@@ -34,6 +87,31 @@ export const createProduct: RequestHandler<{}, ProductDTO, ProductInputDTO> = as
   res.json(product);
 };
 
+/**
+ * @openapi
+ * /products/{id}:
+ *   get:
+ *     tags:
+ *       - Products
+ *     description: Get a product by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Product found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ProductOutput'
+ *       404:
+ *         description: Product not found
+ */
+
 export const getProductById: RequestHandler<{ id: string }, ProductDTO> = async (req, res) => {
   const {
     params: { id }
@@ -42,6 +120,39 @@ export const getProductById: RequestHandler<{ id: string }, ProductDTO> = async 
   if (!product) throw new Error('Product not found', { cause: 404 });
   res.json(product);
 };
+
+/**
+ * @openapi
+ * /products/{id}:
+ *   put:
+ *     tags:
+ *       - Products
+ *     description: Update a product by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductInput'
+ *     responses:
+ *       200:
+ *         description: Product updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ProductOutput'
+ *       404:
+ *         description: Product or category not found
+ *       400:
+ *         description: Validation error
+ */
 
 export const updateProduct: RequestHandler<{ id: string }, ProductDTO, ProductInputDTO> = async (req, res) => {
   const {
@@ -62,6 +173,35 @@ export const updateProduct: RequestHandler<{ id: string }, ProductDTO, ProductIn
   await product.save();
   res.json(product);
 };
+
+/**
+ * @openapi
+ * /products/{id}:
+ *   delete:
+ *     tags:
+ *       - Products
+ *     description: Delete a product by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *     responses:
+ *       200:
+ *         description: Product deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Product deleted"
+ *       404:
+ *         description: Product not found
+ */
 
 export const deleteProduct: RequestHandler<{ id: string }> = async (req, res) => {
   // TODO: delete must fail if product is referenced in order

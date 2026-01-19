@@ -22,10 +22,60 @@ function toUserDTO(doc: any): UserDTO {
   };
 }
 
+/**
+ * @openapi
+ * /users:
+ *   get:
+ *     tags:
+ *       - Users
+ *     description: Get all users
+ *     responses:
+ *       200:
+ *         description: List of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/UserPublicOutput'
+ */
+
 export const getUsers: RequestHandler<{}, UserDTO[]> = async (_req, res) => {
   const users = await User.find();
   res.json(users.map(toUserDTO));
 };
+
+/**
+ * @openapi
+ * /users:
+ *   post:
+ *     tags:
+ *       - Users
+ *     description: Create a new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserCreateInput'
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserPublicOutput'
+ *       400:
+ *         description: User already exists or validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User already exists"
+ */
 
 export const createUser: RequestHandler<{}, UserDTO, UserCreateDTO> = async (req, res) => {
   const found = await User.findOne({ email: req.body.email });
@@ -35,6 +85,31 @@ export const createUser: RequestHandler<{}, UserDTO, UserCreateDTO> = async (req
   res.status(201).json(toUserDTO(user));
 };
 
+/**
+ * @openapi
+ * /users/{id}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     description: Get a user by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserPublicOutput'
+ *       404:
+ *         description: User not found
+ */
+
 export const getUserById: RequestHandler<{ id: string }, UserDTO> = async (req, res) => {
   const { id } = req.params;
 
@@ -43,6 +118,39 @@ export const getUserById: RequestHandler<{ id: string }, UserDTO> = async (req, 
 
   res.json(toUserDTO(user));
 };
+
+/**
+ * @openapi
+ * /users/{id}:
+ *   put:
+ *     tags:
+ *       - Users
+ *     description: Update a user by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserUpdateInput'
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserPublicOutput'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: User not found
+ */
 
 export const updateUser: RequestHandler<{ id: string }, UserDTO, UserUpdateDTO> = async (req, res) => {
   const { id } = req.params;
@@ -59,6 +167,35 @@ export const updateUser: RequestHandler<{ id: string }, UserDTO, UserUpdateDTO> 
   await user.save();
   res.json(toUserDTO(user));
 };
+
+/**
+ * @openapi
+ * /users/{id}:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     description: Delete a user by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User deleted"
+ *       404:
+ *         description: User not found
+ */
 
 export const deleteUser: RequestHandler<{ id: string }, { message: string }> = async (req, res) => {
   const { id } = req.params;

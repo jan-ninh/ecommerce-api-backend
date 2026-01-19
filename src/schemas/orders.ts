@@ -5,10 +5,69 @@ export const orderIdParamsSchema = z.strictObject({
   id: objectIdString
 });
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     OrderItemInput:
+ *       type: object
+ *       properties:
+ *         productId:
+ *           type: string
+ *           format: ObjectId
+ *           example: "64b7c9f5a1c2e90012ab34cd"
+ *           description: ID of the product
+ *         quantity:
+ *           type: integer
+ *           minimum: 1
+ *           example: 2
+ *           description: Quantity of the product (must be at least 1)
+ *       required:
+ *         - productId
+ *         - quantity
+ */
+
 export const orderItemInputSchema = z.strictObject({
   productId: objectIdString,
   quantity: z.number({ error: 'quantity must be a number' }).int().min(1, { message: 'quantity must be >= 1' })
 });
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     OrderInput:
+ *       type: object
+ *       properties:
+ *         userId:
+ *           type: string
+ *           format: ObjectId
+ *           example: "60c72b2f9b1d8c001c8e4f3a"
+ *           description: ID of the user who placed the order
+ *         items:
+ *           type: array
+ *           minItems: 1
+ *           description: List of ordered items (productId must be unique)
+ *           items:
+ *             $ref: '#/components/schemas/OrderItemInput'
+ *         status:
+ *           type: string
+ *           enum:
+ *             - pending
+ *             - paid
+ *             - shipped
+ *             - cancelled
+ *           example: "pending"
+ *           description: Current order status
+ *         note:
+ *           type: string
+ *           maxLength: 500
+ *           example: "Please deliver after 5 PM"
+ *           description: Optional note for the order
+ *       required:
+ *         - userId
+ *         - items
+ */
 
 export const orderInputSchema = z.strictObject({
   userId: objectIdString,
